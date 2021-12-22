@@ -1,17 +1,11 @@
 import setuptools
 import subprocess
-import os
 
 gowork_version = (
     subprocess.run(["git", "describe", "--tags"], stdout=subprocess.PIPE)
         .stdout.decode("utf-8")
         .strip()
 )
-assert "." in gowork_version
-
-assert os.path.isfile("GoWork/version.py")
-with open("GoWork/VERSION", "w", encoding="utf-8") as fh:
-    fh.write(f"{gowork_version}\n")
 
 setuptools.setup(
     name="GoWork",
@@ -21,7 +15,6 @@ setuptools.setup(
     description="Library to help track your credentials and database engines",
     url="https://github.com/Phomint/GoWork",
     packages=setuptools.find_packages(),
-    package_data={"GoWork": ["VERSION"]},
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
