@@ -1,3 +1,4 @@
+import gowork
 import json
 import os
 import pathlib
@@ -6,7 +7,7 @@ import codecs
 
 class Credentials:
     def __init__(self):
-        self._root = './secret_keys.json'
+        self._root = '/'.join(gowork.__file__.split('/')[:-1]+['safe', 'secret_keys.json'])
         self.creds = {}
 
     def insert(self, name: str, connector: str, credentials: dict):
