@@ -1,1 +1,1 @@
-from configs import Credentials
+from safe.configs import Credentials
