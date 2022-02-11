@@ -6,7 +6,7 @@ import codecs
 
 class Credentials:
     def __init__(self):
-        self._root = f'{pathlib.Path().resolve().__str__()}/safe/secret_keys.json'
+        self._root = './secret_keys.json'
         self.creds = {}
 
     def insert(self, name: str, connector: str, credentials: dict):
