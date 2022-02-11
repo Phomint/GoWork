@@ -1,4 +1,4 @@
-from safe.configs import Credentials
+from gowork.safe.configs import Credentials
 from pyathena import connect
 from pyathena.pandas.util import as_pandas
 from sqlalchemy import create_engine
