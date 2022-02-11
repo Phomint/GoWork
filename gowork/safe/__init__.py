@@ -1,1 +1,1 @@
-from safe.configs import Credentials
+from gowork.safe.configs import Credentials
