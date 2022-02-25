@@ -9,17 +9,9 @@ import glob
 import pathlib
 
 
-def __decode(connector:str, name: str):
-    cred = Credentials().select(connector, name)
-    for k, d in cred.items():
-        if type(d) == dict:
-            cred[k] = base64.b64decode(d['encode'].encode('utf-8')).decode('utf-8')
-    return cred
-
-
 class AthenaGo:
     def __init__(self, name_connection: str):
-        self.__cred = __decode('Athena', name_connection)
+        self.__decode(name_connection)
         self.__con = connect(s3__staging__dir=self.__cred['s3_staging_dir'],
                             region__name=self.__cred['region_name'])
         self.__cursor = self.__con.cursor()
@@ -28,6 +20,13 @@ class AthenaGo:
         if verbose:
             print(sql)
         return as_pandas(self.__cursor.execute(sql))
+
+    def __decode(self, name: str):
+        cred = Credentials().select('Athena', name)
+        for k, d in cred.items():
+            if type(d) == dict:
+                cred[k] = base64.b64decode(d['encode'].encode('utf-8')).decode('utf-8')
+        self.__cred = cred
 
 
 class GoSpark:
@@ -43,7 +42,7 @@ class MysqlGo:
         self.__pandas = pd
 
     def __buildurl(self, name):
-        self.__cred = __decode('MySQL', name)
+        self.__decode(name)
         self.url = f'mysql+pymysql://{self.__cred["user"]}:{self.__cred["password"]}@{self.__cred["host"]}:{self.__cred["port"]}/{self.__cred["database"]}'
 
     def __engine(self):
@@ -58,6 +57,12 @@ class MysqlGo:
     def read_sql(self, sql):
         return self.__pandas.read_sql(sql, con=self.__engine)
 
+    def __decode(self, name: str):
+        cred = Credentials().select('MySQL', name)
+        for k, d in cred.items():
+            if type(d) == dict:
+                cred[k] = base64.b64decode(d['encode'].encode('utf-8')).decode('utf-8')
+        self.__cred = cred
 
 class GoQuery:
     """This object load sql files and insert them into a dictionary to access via their key,
