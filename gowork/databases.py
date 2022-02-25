@@ -9,6 +9,14 @@ import glob
 import pathlib
 
 
+def __decode(connector:str, name: str):
+    cred = Credentials().select(connector, name)
+    for k, d in cred.items():
+        if type(d) == dict:
+            cred[k] = base64.b64decode(d['encode'].encode('utf-8')).decode('utf-8')
+    return cred
+
+
 class AthenaGo:
     def __init__(self, name_connection: str):
         self.__cred = __decode('Athena', name_connection)
@@ -80,11 +88,3 @@ class GoQuery:
         """
         with open(self.__root + '/' + self.path + '/' + file, 'r', encoding='utf-8') as line:
             self.queries[file.replace('.sql', '')] = line.read()
-
-
-def __decode(connector:str, name: str):
-    cred = Credentials().select(connector, name)
-    for k, d in cred.items():
-        if type(d) == dict:
-            cred[k] = base64.b64decode(d['encode'].encode('utf-8')).decode('utf-8')
-    return cred
