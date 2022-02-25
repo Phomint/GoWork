@@ -7,7 +7,7 @@ from pyspark.sql import SparkSession
 from pyspark import pandas as pds
 import glob
 import pathlib
-
+import base64
 
 class AthenaGo:
     def __init__(self, name_connection: str):
