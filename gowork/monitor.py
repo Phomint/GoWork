@@ -3,19 +3,19 @@ from time import time
 
 class GoTimer:
     def __init__(self, verbose=True):
-        self._verbose = verbose
+        self.__verbose = verbose
 
     def start(self):
         self.start = time()
-        self._total = 0.0
+        self.__total = 0.0
         self.schedule = []
         return self
 
     def checkpoint(self, reset=True):
-        if self._verbose:
+        if self.__verbose:
             print(f'{time()-self.start:.1f} sec')
         self.schedule.append(time()-self.start)
-        self._total += time()-self.start
+        self.__total += time()-self.start
         if reset:
             self.reset()
 
@@ -23,9 +23,9 @@ class GoTimer:
         self.start = time()
 
     def stop(self, schedule=False):
-        if self._verbose:
+        if self.__verbose:
             print(f'{time()-self.start:.1f} sec')
-        print(f'total time: {self._total:.1f} sec')
+        print(f'total time: {self.__total:.1f} sec')
         if schedule:
             print(f'schedule: {self.schedule}')
         self.start = None

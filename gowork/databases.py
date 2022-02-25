@@ -10,16 +10,16 @@ import pathlib
 
 
 class AthenaGo:
-    def __init__(self):
-        self._cred = Credentials().select('Athena', 'datalake')
-        self._con = connect(s3_staging_dir=self._cred['s3_staging_dir'],
-                            region_name=self._cred['region_name'])
-        self._cursor = self._con.cursor()
+    def __init__(self, name_connection: str):
+        self.__cred = __decode('Athena', name_connection)
+        self.__con = connect(s3__staging__dir=self.__cred['s3_staging_dir'],
+                            region__name=self.__cred['region_name'])
+        self.__cursor = self.__con.cursor()
 
     def read_sql(self, sql, verbose=False):
         if verbose:
             print(sql)
-        return as_pandas(self._cursor.execute(sql))
+        return as_pandas(self.__cursor.execute(sql))
 
 
 class GoSpark:
@@ -29,26 +29,26 @@ class GoSpark:
 
 
 class MysqlGo:
-    def __init__(self, base):
-        self._buildurl(base)
-        self._engine()
-        self._pandas = pd
+    def __init__(self, name_connection: str):
+        self.__buildurl(name_connection)
+        self.__engine()
+        self.__pandas = pd
 
-    def _buildurl(self, base):
-        self._cred = Credentials().select('MySQL', base)
-        self.url = f'mysql+pymysql://{self._cred["user"]}:{self._cred["password"]}@{self._cred["host"]}:{self._cred["port"]}/{self._cred["database"]}'
+    def __buildurl(self, name):
+        self.__cred = __decode('MySQL', name)
+        self.url = f'mysql+pymysql://{self.__cred["user"]}:{self.__cred["password"]}@{self.__cred["host"]}:{self.__cred["port"]}/{self.__cred["database"]}'
 
-    def _engine(self):
-        self._engine = create_engine(self.url)
+    def __engine(self):
+        self.__engine = create_engine(self.url)
 
     def spark(self):
         spark = GoSpark()
         self.spark_session = spark.spark_session
-        self._pandas = spark.pandas
+        self.__pandas = spark.pandas
         return self
 
     def read_sql(self, sql):
-        return self._pandas.read_sql(sql, con=self._engine)
+        return self.__pandas.read_sql(sql, con=self.__engine)
 
 
 class GoQuery:
@@ -61,22 +61,30 @@ class GoQuery:
         """
         self.queries = {}
         self.path = path
-        self._root = pathlib.Path().resolve().__str__()
-        self._loadfiles()
+        self.__root = pathlib.Path().resolve().__str__()
+        self.__loadfiles()
 
-    def _loadfiles(self):
+    def __loadfiles(self):
         """
         Internal method that go through all files in directory and insert into a dictionary
         :return: None
         """
-        for path in glob.glob(f"{self._root + '/' + self.path}/*.sql"):
-            self._cachefile(path.split('/')[-1])
+        for path in glob.glob(f"{self.__root + '/' + self.path}/*.sql"):
+            self.__cachefile(path.split('/')[-1])
 
-    def _cachefile(self, file: str):
+    def __cachefile(self, file: str):
         """
         Insert into dictionary
         :param file: File name
         :return: None
         """
-        with open(self._root + '/' + self.path + '/' + file, 'r', encoding='utf-8') as line:
+        with open(self.__root + '/' + self.path + '/' + file, 'r', encoding='utf-8') as line:
             self.queries[file.replace('.sql', '')] = line.read()
+
+
+def __decode(connector:str, name: str):
+    cred = Credentials().select(connector, name)
+    for k, d in cred.items():
+        if type(d) == dict:
+            cred[k] = base64.b64decode(d['encode'].encode('utf-8')).decode('utf-8')
+    return cred
