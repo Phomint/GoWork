@@ -12,8 +12,8 @@ import base64
 class AthenaGo:
     def __init__(self, name_connection: str):
         self.__decode(name_connection)
-        self.__con = connect(s3__staging__dir=self.__cred['s3_staging_dir'],
-                            region__name=self.__cred['region_name'])
+        self.__con = connect(s3_staging_dir=self.__cred['s3_staging_dir'],
+                            region_name=self.__cred['region_name'])
         self.__cursor = self.__con.cursor()
 
     def read_sql(self, sql, verbose=False):
