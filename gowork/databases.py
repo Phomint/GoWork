@@ -3,8 +3,6 @@ from pyathena import connect
 from pyathena.pandas.util import as_pandas
 from sqlalchemy import create_engine
 import pandas as pd
-from pyspark.sql import SparkSession
-from pyspark import pandas as pds
 import glob
 import pathlib
 import base64
@@ -29,12 +27,6 @@ class AthenaGo:
         self.__cred = cred
 
 
-class GoSpark:
-    def __init__(self, host='local'):
-        self.spark_session = SparkSession.builder.master(host).getOrCreate()
-        self.pandas = pds
-
-
 class MysqlGo:
     def __init__(self, name_connection: str):
         self.__buildurl(name_connection)
@@ -47,12 +39,6 @@ class MysqlGo:
 
     def __engine(self):
         self.__engine = create_engine(self.url)
-
-    def spark(self):
-        spark = GoSpark()
-        self.spark_session = spark.spark_session
-        self.__pandas = spark.pandas
-        return self
 
     def read_sql(self, sql):
         return self.__pandas.read_sql(sql, con=self.__engine)
