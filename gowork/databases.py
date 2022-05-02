@@ -58,10 +58,16 @@ class GoQuery:
         """
         :param path: Where your sql files are located
         """
-        self.queries = {}
+        self.__queries = {}
         self.path = path
         self.__root = pathlib.Path().resolve().__str__()
         self.__loadfiles()
+
+    def use(self, query_name: str):
+        """Select which query do you want use
+        :param query_name: SQL file saved, without extension .sql
+        """
+        return self.__queries[query_name]
 
     def __percsign(self, query):
         """By default python uses %% to indicate use of %, so to handle with
@@ -84,4 +90,4 @@ class GoQuery:
         :return: None
         """
         with open(self.__root + '/' + self.path + '/' + file, 'r', encoding='utf-8') as line:
-            self.queries[file.replace('.sql', '')] = self.__percsign(line.read())
+            self.__queries[file.replace('.sql', '')] = self.__percsign(line.read())
