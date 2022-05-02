@@ -63,6 +63,12 @@ class GoQuery:
         self.__root = pathlib.Path().resolve().__str__()
         self.__loadfiles()
 
+    def __percsign(self, query):
+        """By default python uses %% to indicate use of %, so to handle with
+        :param query: Any query type string
+        """
+        return query.replace('%%','%').replace('%','%%')
+
     def __loadfiles(self):
         """
         Internal method that go through all files in directory and insert into a dictionary
@@ -78,4 +84,4 @@ class GoQuery:
         :return: None
         """
         with open(self.__root + '/' + self.path + '/' + file, 'r', encoding='utf-8') as line:
-            self.queries[file.replace('.sql', '')] = line.read()
+            self.queries[file.replace('.sql', '')] = self.__percsign(line.read())
