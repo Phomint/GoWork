@@ -1,4 +1,5 @@
 from gowork.safe.configs import Credentials
+from mongudb.sql import Transaction
 from pyathena import connect
 from pyathena.pandas.util import as_pandas
 from sqlalchemy import create_engine
@@ -7,11 +8,14 @@ import glob
 import pathlib
 import base64
 
+
 class AthenaGo:
     def __init__(self, name_connection: str):
         self.__decode(name_connection)
-        self.__con = connect(s3_staging_dir=self.__cred['s3_staging_dir'],
-                            region_name=self.__cred['region_name'])
+        self.__con = connect(aws_access_key_id=self.__cred['aws_access_key_id'],
+                             aws_secret_access_key=self.__cred['aws_secret_access_key'],
+                             s3_staging_dir=self.__cred['s3_staging_dir'],
+                             region_name=self.__cred['region_name'])
         self.__cursor = self.__con.cursor()
 
     def read_sql(self, sql, verbose=False):
@@ -40,7 +44,9 @@ class MysqlGo:
     def __engine(self):
         self.__engine = create_engine(self.url)
 
-    def read_sql(self, sql):
+    def read_sql(self, sql, verbose=False):
+        if verbose:
+            print(sql)
         return self.__pandas.read_sql(sql, con=self.__engine)
 
     def __decode(self, name: str):
@@ -49,6 +55,25 @@ class MysqlGo:
             if type(d) == dict:
                 cred[k] = base64.b64decode(d['encode'].encode('utf-8')).decode('utf-8')
         self.__cred = cred
+
+
+class MongoGo:
+    def __init__(self, name_connection: str):
+        self.__decode(name_connection)
+
+    def read_sql(self, sql, verbose=False):
+        if verbose:
+            print(sql)
+        t = Transaction(self.__cred['database'], self.__cred['url']).query(sql).run()
+        return pd.DataFrame([i for i in t.query(sql).run().iter()])
+
+    def __decode(self, name: str):
+        cred = Credentials().select('MongoDB', name)
+        for k, d in cred.items():
+            if type(d) == dict:
+                cred[k] = base64.b64decode(d['encode'].encode('utf-8')).decode('utf-8')
+        self.__cred = cred
+
 
 class GoQuery:
     """This object load sql files and insert them into a dictionary to access via their key,
