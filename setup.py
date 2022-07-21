@@ -25,13 +25,14 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     license='GPLv3',
-    keywords=['databases', 'athena', 'mysql'],
+    keywords=['databases', 'athena', 'mysql', 'mongodb'],
     install_requires=[
         "numpy",
         "pandas",
         "pyathena",
         "pymysql",
         "glob2",
-        "sqlalchemy"
+        "sqlalchemy",
+        "mongudb"
     ],
 )
