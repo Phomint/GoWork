@@ -1,6 +1,5 @@
 import setuptools
 import subprocess
-import codecs
 
 gowork_version = (
     subprocess.run(["git", "describe", "--tags"], stdout=subprocess.PIPE)
@@ -14,7 +13,6 @@ setuptools.setup(
     author="Patrick Amaral",
     author_email="patrick.dev.atom@gmail.com",
     description="Library to help track your credentials and database engines",
-    long_description=codecs.open('README.rst', encoding='utf-8').read(),
     url="https://github.com/Phomint/GoWork",
     packages=setuptools.find_packages(),
     include_package_data=True,
