@@ -2,11 +2,12 @@ import gowork
 import json
 import os
 import base64
-
+import platform
 
 class Credentials:
     def __init__(self):
-        self.__root = '/'.join(gowork.__file__.split('/')[:-1] + ['safe', 'secret_keys.json'])
+        self.__platform = '\\' if platform.system().__str__() == 'Windows' else '/'
+        self.__root = self.__platform.join(gowork.__file__.split(self.__platform)[:-1] + ['safe', 'secret_keys.json'])
         self.__creds = {}
 
     def insert(self, name: str, connector: str, credentials: dict, encode=[]):
@@ -43,3 +44,5 @@ class Credentials:
         for key in keys:
             credentials[key] = {'encode': base64.b64encode(credentials[key].encode('utf-8')).decode('utf-8')}
         return credentials
+
+

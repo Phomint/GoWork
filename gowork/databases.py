@@ -7,7 +7,7 @@ import pandas as pd
 import glob
 import pathlib
 import base64
-
+import platform
 
 class AthenaGo:
     def __init__(self, name_connection: str):
@@ -83,6 +83,7 @@ class GoQuery:
         """
         :param path: Where your sql files are located
         """
+        self.__platform = '\\' if platform.system().__str__() == 'Windows' else '/'
         self.__queries = {}
         self.path = path
         self.__root = pathlib.Path().resolve().__str__()
@@ -105,8 +106,8 @@ class GoQuery:
         Internal method that go through all files in directory and insert into a dictionary
         :return: None
         """
-        for path in glob.glob(f"{self.__root + '/' + self.path}/*.sql"):
-            self.__cachefile(path.split('/')[-1])
+        for path in glob.glob(f"{self.__root + self.__platform + self.path + self.__platform}*.sql"):
+            self.__cachefile(path.split(self.__platform)[-1])
 
     def __cachefile(self, file: str):
         """
@@ -114,5 +115,5 @@ class GoQuery:
         :param file: File name
         :return: None
         """
-        with open(self.__root + '/' + self.path + '/' + file, 'r', encoding='utf-8') as line:
+        with open(self.__root + self.__platform + self.path + self.__platform + file, 'r', encoding='utf-8') as line:
             self.__queries[file.replace('.sql', '')] = self.__percsign(line.read())
