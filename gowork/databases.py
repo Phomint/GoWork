@@ -9,6 +9,7 @@ import pathlib
 import base64
 import platform
 
+
 class AthenaGo:
     def __init__(self, name_connection: str):
         self.__decode(name_connection)
