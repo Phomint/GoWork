@@ -2,6 +2,8 @@ import pandas as pd
 import shutil
 import os
 import pathlib
+import platform
+import glob
 
 
 class GoStorage:
@@ -34,5 +36,38 @@ class GoStorage:
             next += self.__size
         return self
 
+
+class Files:
+
+    def __init__(self, path: str, type='csv'):
+        self.__platform = '\\' if platform.system().__str__() == 'Windows' else '/'
+        self.__frames = {}
+        self.path = path
+        self.__root = pathlib.Path().resolve().__str__()
+        self.__type = type
+        self.__loadfiles()
+
+    def use(self, frame_name: str):
+        return self.__frames[frame_name]
+
+    def use_index(self, index: int):
+        return self.__frames[list(self.__frames.keys())[index]]
+
+    def __loadfiles(self):
+        for path in glob.glob(f"{self.__root + self.__platform + self.path + self.__platform}*.{self.__type}"):
+            self.__cachefile(path.split(self.__platform)[-1])
+
+    def __cachefile(self, file: str):
+        """
+        Insert into dictionary
+        :param file: File name
+        :return: None
+        """
+        if self.__type == 'csv':
+            result = pd.read_csv(self.__root + self.__platform + self.path + self.__platform + file)
+        else:
+            result = self.__root + self.__platform + self.path + self.__platform + file
+
+        self.__frames[file.replace(f'.{self.__type}', '')] = result
     def clear(self):
         shutil.rmtree(self.__local)
