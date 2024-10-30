@@ -45,8 +45,9 @@ class GoFiles:
         self.path = path
         self.__root = pathlib.Path().resolve().__str__()
         self.__type = type
-        self.__loadfiles()
         self.sep = sep
+        self.__loadfiles()
+
 
     def use(self, frame_name: str):
         return self.__frames[frame_name]
