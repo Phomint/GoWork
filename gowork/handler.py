@@ -37,15 +37,16 @@ class GoStorage:
         return self
 
 
-class Files:
+class GoFiles:
 
-    def __init__(self, path: str, type='csv'):
+    def __init__(self, path: str, type='csv', sep=','):
         self.__platform = '\\' if platform.system().__str__() == 'Windows' else '/'
         self.__frames = {}
         self.path = path
         self.__root = pathlib.Path().resolve().__str__()
         self.__type = type
         self.__loadfiles()
+        self.sep = sep
 
     def use(self, frame_name: str):
         return self.__frames[frame_name]
@@ -64,10 +65,11 @@ class Files:
         :return: None
         """
         if self.__type == 'csv':
-            result = pd.read_csv(self.__root + self.__platform + self.path + self.__platform + file)
+            result = pd.read_csv(self.__root + self.__platform + self.path + self.__platform + file, sep=self.sep)
         else:
             result = self.__root + self.__platform + self.path + self.__platform + file
 
         self.__frames[file.replace(f'.{self.__type}', '')] = result
+
     def clear(self):
         shutil.rmtree(self.__local)
